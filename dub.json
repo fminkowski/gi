@@ -1,0 +1,9 @@
+{
+	"name": "gi",
+	"authors": [
+		"fminkowski"
+	],
+	"description": "gi programming language",
+	"copyright": "Copyright © 2018, fminkowski",
+	"license": "MIT"
+}
