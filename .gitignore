@@ -12,3 +12,4 @@ gi-test-*
 *.o
 *.obj
 *.lst
+*.sublime-workspace
