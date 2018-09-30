@@ -14,7 +14,7 @@ class Primary : Expr {
 	}
 
 	override string toString() {
-		return "Primary(" ~ token.value ~ ")";
+		return "Primary(" ~ token.type.toString ~ ", " ~ token.value ~ ")";
 	}
 
 	override string accept(IAstPrinter printer) {

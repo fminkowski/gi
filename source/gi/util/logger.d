@@ -6,13 +6,26 @@ import gi.parser.expression;
 
 static class Logger {
 	import std.stdio;
-	static IAstPrinter printer;
-
-	static this() {
- 		printer = new SExpressionPrinter();
+	private {
+		static IAstPrinter _defaultPrinter;
+		static IAstPrinter _printer;
 	}
 
-	static void errors(IGeneratesGiError target) {
+	static this() {
+ 		_defaultPrinter = new AstPrinter();
+ 		_printer = _defaultPrinter;
+	}
+
+	static {
+	void use_printer(IAstPrinter printer) {
+		_printer = printer;
+	}
+
+	void use_default_printer() {
+		_printer = _defaultPrinter;
+	}
+
+	void errors(IGeneratesGiError target) {
 		if (target.has_errors) {
 			foreach (e; target.errors) {
 				writeln(e);
@@ -20,21 +33,22 @@ static class Logger {
 		}
 	}
 
-	static void log(string msg) {
+	void log(string msg) {
 		writeln(msg);
 	}
 
-	static void log(Expr expr) {
-		writeln(expr.accept(printer));
+	void log(Expr expr) {
+		writeln(expr.accept(_printer));
 	}
 
-	static void log(Stmt stmt) {
-		writeln(stmt.expr.accept(printer));
+	void log(Stmt stmt) {
+		writeln(stmt.expr.accept(_printer));
 	}
 
-	static void log(Stmt[] stmts) {
+	void log(Stmt[] stmts) {
 		foreach (stmt; stmts) {
 			log(stmt);
 		}
+	}
 	}
 }
