@@ -148,7 +148,7 @@ class Parser {
 				consume(TokenType.Rparen);
 				return new Grouping(expr);
 			}
-			return null;
+			throw new ParsingException("Unrecognized token");
 		}
 
 		Token next() {
@@ -173,8 +173,10 @@ class Parser {
 		}
 
 		void expect(TokenType type) {
-			if (peek().type != type) {
-				throw new ParsingException("Expected " ~ type.toString);
+			auto token = peek();
+			if (token.type != type) {
+				throw new ParsingException("[" ~ to!string(token.line) ~ ", " ~ to!string(token.column) ~ 
+										   "] Expected " ~ type.toString);
 			}
 		}
 

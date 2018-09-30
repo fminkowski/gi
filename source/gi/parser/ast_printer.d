@@ -12,7 +12,7 @@ interface IAstPrinter {
 
 class SExpressionPrinter : IAstPrinter {
 	string visit_grouping(Grouping grouping) {
-		return grouping.token.value;
+		return "(" ~ grouping.expr.accept(this) ~ ")";
 	}
 
 	string visit_primary(Primary primary) {

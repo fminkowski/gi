@@ -85,10 +85,13 @@ class Token {
 
 	string value;
 	TokenType type;
+	int line;
+	int column;
 
-	this(string value, TokenType type) {
+	this(string value, TokenType type, int line, int column) {
 		this.value = value;
 		this.type = type;
+		this.column = column;
 	}
 
 	override string toString() {
@@ -122,10 +125,14 @@ class Lexer {
 		int current;
 		string _src;
 		Token[] _tokens;
+		int _line;
+		int _col;
 	}
 
 	this(string src) {
 		this._src = src;
+		this._line = 1;
+		this._col = 1;
 	}
 
 	public void lex() {
@@ -134,39 +141,42 @@ class Lexer {
 			auto str = to!string(ch);
 			switch (str) {
 				case " ", "\n", "\t", "\r\n":
+					if (str == "\n" || str == "\r\n") {
+						_line++;
+					}
 					continue;
 				case "+": 
-					_tokens ~= new Token(str, TokenType.Plus);
+					_tokens ~= new Token(str, TokenType.Plus, _line, _col);
 					break;
 				case "-": 
-					_tokens ~= new Token(str, TokenType.Minus);
+					_tokens ~= new Token(str, TokenType.Minus, _line, _col);
 					break;
 				case "/":
-					_tokens ~= new Token(str, TokenType.Slash);
+					_tokens ~= new Token(str, TokenType.Slash, _line, _col);
 					break;
 				case "%":
-					_tokens ~= new Token(str, TokenType.Mod);
+					_tokens ~= new Token(str, TokenType.Mod, _line, _col);
 					break;
 				case "*":
-					_tokens ~= new Token(str, TokenType.Star);
+					_tokens ~= new Token(str, TokenType.Star, _line, _col);
 					break;
 				case "!":
-					_tokens ~= new Token(str, TokenType.Bang);
+					_tokens ~= new Token(str, TokenType.Bang, _line, _col);
 					break;
 				case "(":
-					_tokens ~= new Token(str, TokenType.Lparen);
+					_tokens ~= new Token(str, TokenType.Lparen, _line, _col);
 					break;
 				case ")":
-					_tokens ~= new Token(str, TokenType.Rparen);
+					_tokens ~= new Token(str, TokenType.Rparen, _line, _col);
 					break;
 				case "<":
 					Token token;
 					if (peek() == '=') {
 						str = "<=";
 						next();
-						token = new Token(str, TokenType.LessEqual);
+						token = new Token(str, TokenType.LessEqual, _line, _col);
 					} else {
-						token = new Token(str, TokenType.Less);
+						token = new Token(str, TokenType.Less, _line, _col);
 					}
 					_tokens ~= token;
 					break;
@@ -175,9 +185,9 @@ class Lexer {
 					if (peek() == '=') {
 						str = ">=";
 						next();
-						token = new Token(str, TokenType.GreaterEqual);
+						token = new Token(str, TokenType.GreaterEqual, _line, _col);
 					} else {
-						token = new Token(str, TokenType.Greater);
+						token = new Token(str, TokenType.Greater, _line, _col);
 					}
 					_tokens ~= token;
 					break;
@@ -186,9 +196,9 @@ class Lexer {
 					if (peek() == '=') {
 						str = "==";
 						next();
-						token = new Token(str, TokenType.Equal);
+						token = new Token(str, TokenType.Equal, _line, _col);
 					} else {
-						token = new Token(str, TokenType.Assign);
+						token = new Token(str, TokenType.Assign, _line, _col);
 					}
 					_tokens ~= token;
 					break;
@@ -197,26 +207,26 @@ class Lexer {
 					if (peek() == '&') {
 						str = "&&";
 						next();
-						token = new Token(str, TokenType.LogicalAnd);
+						token = new Token(str, TokenType.LogicalAnd, _line, _col);
 					} else {
-						token = new Token(str, TokenType.BitAnd);
+						token = new Token(str, TokenType.BitAnd, _line, _col);
 					}
 					_tokens ~= token;
 					break;
 				case "~":
-					_tokens ~= new Token(str, TokenType.BitNot);
+					_tokens ~= new Token(str, TokenType.BitNot, _line, _col);
 					break;
 				case "^":
-					_tokens ~= new Token(str, TokenType.BitXOr);
+					_tokens ~= new Token(str, TokenType.BitXOr, _line, _col);
 					break;
 				case "|":
 					Token token;
 					if (peek() == '|') {
 						str = "||";
 						next();
-						token = new Token(str, TokenType.LogicalOr);
+						token = new Token(str, TokenType.LogicalOr, _line, _col);
 					} else {
-						token = new Token(str, TokenType.BitOr);
+						token = new Token(str, TokenType.BitOr, _line, _col);
 					}
 					_tokens ~= token;
 					break;
@@ -233,13 +243,13 @@ class Lexer {
 						}
 						value ~= ch;
 					}
-					_tokens ~= new Token(value, token_type);
+					_tokens ~= new Token(value, token_type, _line, _col);
 					break;
 				default:
 					throw new InvalidToken("Unrecognized token " ~ str);
 			}
 		}
-		_tokens ~= new Token("", TokenType.EndOfFile);
+		_tokens ~= new Token("", TokenType.EndOfFile, _line, _col);
 	}
 
 	@property Token[] tokens() {
@@ -249,6 +259,7 @@ class Lexer {
 	private char next() {
 		if (current < _src.length) {
 			auto str = _src[current];
+			this._col++;
 			current++;
 			return str;
 		}
