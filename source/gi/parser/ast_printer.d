@@ -20,11 +20,11 @@ class SExpressionPrinter : IAstPrinter {
 	}
 
 	string visit_unary(Unary unary) {
-		return unary.token.toString ~ "(" ~ unary.right.accept(this) ~ ")";
+		return "(" ~ unary.token.toString  ~ " " ~ unary.right.accept(this) ~ ")";
 	}
 
 	string visit_binary(Binary binary) {
-		return binary.token.toString ~ "(" ~ 
+		return "(" ~ binary.token.toString ~ " " ~
 			   binary.left.accept(this) ~ " " ~ 
 			   binary.right.accept(this) ~ ")";
 	}
