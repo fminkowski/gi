@@ -12,7 +12,7 @@ static class Logger {
  		printer = new SExpressionPrinter();
 	}
 
-	static void log(IGeneratesGiError target) {
+	static void errors(IGeneratesGiError target) {
 		if (target.has_errors) {
 			foreach (e; target.errors) {
 				writeln(e);

@@ -9,14 +9,14 @@ import gi.util.logger;
 void run(Commands cmds) {
 	auto lexer = new Lexer(cmds.source);
 	lexer.lex();
-	Logger.log(lexer);
+	Logger.errors(lexer);
 	if (lexer.has_errors) {
 		return;
 	}
 
 	auto parser = new Parser(lexer.tokens);
 	auto stmts = parser.parse();
-	Logger.log(parser);
+	Logger.errors(parser);
 	if (parser.has_errors) {
 		return;
 	}
