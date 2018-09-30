@@ -42,7 +42,7 @@ static class Logger {
 	}
 
 	void log(Stmt stmt) {
-		writeln(stmt.expr.accept(_printer));
+		writeln(stmt.accept(_printer));
 	}
 
 	void log(Stmt[] stmts) {

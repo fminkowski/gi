@@ -3,6 +3,7 @@ module gi.lexer;
 import gi.util.error;
 
 enum TokenType {
+	None,
 	Plus,
 	Minus,
 	Slash,
@@ -33,6 +34,8 @@ enum TokenType {
 	FloatLit,
 	Identifier,
 	Var,
+	Int32,
+	Float32,
 	EndOfFile
 }
 
@@ -88,10 +91,10 @@ string toString(TokenType type) {
 			return "&&";
 		case TokenType.LogicalOr:
 			return "||";
-		case TokenType.IntLit:
-			return "int";
-		case TokenType.FloatLit:
-			return "float";
+		case TokenType.IntLit, TokenType.Int32:
+			return "i32";
+		case TokenType.FloatLit, TokenType.Float32:
+			return "f32";
 		case TokenType.Identifier:
 			return "identifier";
 		case TokenType.Var:
@@ -132,6 +135,17 @@ bool is_char(char c) {
 
 bool is_identifier_char(char c) {
 	return is_char(c) || c >= '0' && c <= '9';
+}
+
+TokenType base_type(string value) {
+	switch (value) {
+		case "i32":
+			return TokenType.Int32;
+		case "f32":
+			return TokenType.Float32;
+		default:
+			return TokenType.None;
+	}
 }
 
 class Lexer : IGeneratesGiError {
@@ -316,6 +330,9 @@ class Lexer : IGeneratesGiError {
 
 					 if (value == "var") {
 					 	type = TokenType.Var;
+					 } 
+					 if (base_type(value) != TokenType.None) {
+					 	type = base_type(value);
 					 }
 					 add_token(new Token(value, type, _line, column));
 					 break;

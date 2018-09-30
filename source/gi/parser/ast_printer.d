@@ -8,8 +8,8 @@ interface IAstPrinter {
 	string visit_primary(Primary primary);
 	string visit_unary(Unary unary);
 	string visit_binary(Binary binary);
-	string visit_assign(Assign assign);
 	string visit_simple_stmt(Stmt stmt);
+	string visit_assignment_stmt(AssignStmt stmt);
 }
 
 class SExpressionPrinter : IAstPrinter {
@@ -31,14 +31,12 @@ class SExpressionPrinter : IAstPrinter {
 			   binary.right.accept(this) ~ ")";
 	}
 
-	string visit_assign(Assign assign) {
-		return assign.left.accept(this) ~ " " ~
-			   assign.token.toString ~ " " ~
-			   assign.right.accept(this);
+	string visit_simple_stmt(Stmt stmt) {
+		return stmt.r_expr.accept(this);
 	}
 
-	string visit_simple_stmt(Stmt stmt) {
-		return stmt.expr.accept(this);
+	string visit_assignment_stmt(AssignStmt stmt) {
+		return stmt.type.toString() ~ " " ~ stmt.l_expr.accept(this) ~ " " ~ stmt.op.toString ~ " " ~ stmt.r_expr.accept(this);
 	}
 }
 
@@ -59,11 +57,11 @@ class AstPrinter : IAstPrinter {
 		return binary.toString;
 	}
 
-	string visit_assign(Assign assign) {
-		return assign.toString;
+	string visit_simple_stmt(Stmt stmt) {
+		return stmt.toString;
 	}
 
-	string visit_simple_stmt(Stmt stmt) {
-		return stmt.expr.accept(this);
+	string visit_assignment_stmt(AssignStmt stmt) {
+		return stmt.toString;
 	}
 }

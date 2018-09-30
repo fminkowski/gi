@@ -42,30 +42,30 @@ class Parser : IGeneratesGiError {
 
 	private {
 		Stmt statement() {
-			Expr expr = expression();
-			consume(TokenType.SemiColon);
-			return new Stmt(expr);
+			auto stmt = assignment();
+			return stmt;
 		}
 
 		Expr expression() {
-			return assign();
+			return logical_or();
 		}
 
 
-		Expr assign() {
-			if(match(TokenType.Var, TokenType.Identifier)) {
-				if (match(TokenType.Var)) {
-					consume(TokenType.Var);
-					expect(TokenType.Identifier);
-				}
+		Stmt assignment() {
+			if(match(TokenType.Var, 
+					 TokenType.Int32, 
+					 TokenType.Float32)) {
+				auto type = next();
+				expect(TokenType.Identifier);
 				Expr expr = logical_or();
 				while (match(TokenType.Assign)) {
 					auto token = next();
 					auto right = logical_or();
-					return new Assign(expr, token, right);
+					consume(TokenType.SemiColon);
+					return new AssignStmt(type, expr, token, right);
 				}
 			}
-			return logical_or();
+			return new Stmt(logical_or());
 		}
 
 		Expr logical_or() {
@@ -184,7 +184,7 @@ class Parser : IGeneratesGiError {
 				return new Grouping(expr);
 			}
 			auto token = peek();
-			throw new ParsingError(token.line, token.column, "Unrecognized token");
+			throw new ParsingError(token.line, token.column, "Unrecognized token " ~ token.value );
 		}
 
 		Token next() {
