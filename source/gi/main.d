@@ -7,17 +7,19 @@ import gi.parser.ast_printer;
 import gi.util.logger;
 
 void run(Commands cmds) {
+	Logger.use_printer(new SExpressionPrinter());
+
 	auto lexer = new Lexer(cmds.source);
 	lexer.lex();
-	Logger.errors(lexer);
 	if (lexer.has_errors) {
+		Logger.errors(lexer);
 		return;
 	}
 
 	auto parser = new Parser(lexer.tokens);
 	auto stmts = parser.parse();
-	Logger.errors(parser);
 	if (parser.has_errors) {
+		Logger.errors(parser);
 		return;
 	}
 
