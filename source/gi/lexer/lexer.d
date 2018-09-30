@@ -179,47 +179,51 @@ class Lexer : IGeneratesGiError {
 					break;
 				case "<":
 					Token token;
+					TokenType type;
 					if (peek() == '=') {
-						str = "<=";
 						next();
-						token = new Token(str, TokenType.LessEqual, _line, _col);
+						str = "<=";
+						type = TokenType.LessEqual;
 					} else {
-						token = new Token(str, TokenType.Less, _line, _col);
+						type = TokenType.Less;
 					}
-					add_token(token);
+					add_token(new Token(str, type , _line, _col));
 					break;
 				case ">":
 					Token token;
+					TokenType type;
 					if (peek() == '=') {
-						str = ">=";
 						next();
-						token = new Token(str, TokenType.GreaterEqual, _line, _col);
+						str = ">=";
+						type = TokenType.GreaterEqual;
 					} else {
-						token = new Token(str, TokenType.Greater, _line, _col);
+						type = TokenType.Greater;
 					}
-					add_token(token);
+					add_token(new Token(str, type, _line, _col));
 					break;
 				case "=":
 					Token token;
+					TokenType type;
 					if (peek() == '=') {
-						str = "==";
 						next();
-						token = new Token(str, TokenType.Equal, _line, _col);
+						str = "==";
+						type = TokenType.Equal;
 					} else {
-						token = new Token(str, TokenType.Assign, _line, _col);
+						type = TokenType.Assign;
 					}
-					add_token(token);
+					add_token(new Token(str, type, _line, _col));
 					break;
 				case "&":
 					Token token;
+					TokenType type;
 					if (peek() == '&') {
-						str = "&&";
 						next();
-						token = new Token(str, TokenType.LogicalAnd, _line, _col);
+						str = "&&";
+						type = TokenType.LogicalAnd;
 					} else {
-						token = new Token(str, TokenType.BitAnd, _line, _col);
+						type = TokenType.BitAnd;
 					}
-					add_token(token);
+					add_token(new Token(str, type, _line, _col));
 					break;
 				case "~":
 					add_token(new Token(str, TokenType.BitNot, _line, _col));
@@ -229,14 +233,15 @@ class Lexer : IGeneratesGiError {
 					break;
 				case "|":
 					Token token;
+					TokenType type;
 					if (peek() == '|') {
-						str = "||";
 						next();
-						token = new Token(str, TokenType.LogicalOr, _line, _col);
+						str = "||";
+						type = TokenType.LogicalOr;
 					} else {
-						token = new Token(str, TokenType.BitOr, _line, _col);
+						type = TokenType.BitOr;
 					}
-					add_token(token);
+					add_token(new Token(str, type, _line, _col));
 					break;
 				case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
 					string value;
