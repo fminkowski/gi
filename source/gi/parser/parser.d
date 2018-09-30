@@ -1,6 +1,7 @@
-module gi.parser;
+module gi.parser.parser;
 
 import gi.lexer;
+import gi.parser.expression;
 
 import std.conv;
 
@@ -9,61 +10,6 @@ class ParsingException : Exception
     this(string msg, string file = __FILE__, size_t line = __LINE__) {
         super(msg, file, line);
     }
-}
-
-class Expr {
-	Token token;
-}
-
-class Primary : Expr {
-	this(Token token) {
-		this.token = token;
-	}
-
-	override string toString() {
-		return token.value;
-	}
-}
-
-class Unary : Expr {
-	Expr right;
-
-	this (Token token, Expr right) {
-		this.token = token;
-		this.right = right;
-	}
-
-	override string toString() {
-		return token.toString ~ "(" ~ right.toString() ~ ")";
-	}
-}
-
-class Binary : Expr {
-	Expr left;
-	Expr right;
-	Token token;
-
-	this (Expr left, Token token, Expr right) {
-		this.left = left;
-		this.token = token;
-		this.right = right;
-	}
-
-	override string toString() {
-		return token.toString ~ "(" ~ left.toString ~ " " ~ right.toString ~ ")";
-	}
-}
-
-class Grouping : Expr {
-	Expr expr;
-
-	this (Expr expr) {
-		this.expr = expr;
-	}
-
-	override string toString() {
-		return expr.toString;
-	}
 }
 
 class Parser {

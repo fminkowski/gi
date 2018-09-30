@@ -2,7 +2,8 @@ module gi.main;
 
 import gi.input.commands;
 import gi.lexer;
-import gi.parser;
+import gi.parser.parser;
+import gi.parser.ast_printer;
 
 import std.stdio;
 
@@ -12,5 +13,12 @@ void run(Commands cmds) {
 
 	auto parser = new Parser(lexer.tokens);
 	auto expr = parser.parse();
-	writeln(expr);
+
+	IAstPrinter printer = new SExpressionPrinter();
+	auto expr_str = printer.print(expr);
+	writeln(expr_str);
+
+	printer = new AstPrinter();
+	expr_str = printer.print(expr);
+	writeln(expr_str);
 }
