@@ -2,15 +2,9 @@ module gi.parser.parser;
 
 import gi.lexer;
 import gi.parser.expression;
+import gi.util.error;
 
 import std.conv;
-
-class ParsingException : Exception
-{
-    this(string msg, string file = __FILE__, size_t line = __LINE__) {
-        super(msg, file, line);
-    }
-}
 
 class Parser {
 	import std.algorithm: canFind;
@@ -18,14 +12,24 @@ class Parser {
 	private {
 		int current;
 		Token[] _tokens;
+		GiError[] _errors;
 	}
 
 	this(Token[] tokens) {
 		this._tokens = tokens;
 	}
 
-	Expr parse() {
-		return expression();
+	@property GiError[] errors() {
+		return _errors;
+	}
+
+ 	Expr parse() {
+		try {
+			return expression();			
+		} catch (GiError e) {
+			_errors ~= e;
+		}
+		return null;
 	}
 
 	private {
@@ -148,7 +152,7 @@ class Parser {
 				consume(TokenType.Rparen);
 				return new Grouping(expr);
 			}
-			throw new ParsingException("Unrecognized token");
+			throw new ParsingError("Unrecognized token");
 		}
 
 		Token next() {
@@ -175,7 +179,7 @@ class Parser {
 		void expect(TokenType type) {
 			auto token = peek();
 			if (token.type != type) {
-				throw new ParsingException("[" ~ to!string(token.line) ~ ", " ~ to!string(token.column) ~ 
+				throw new ParsingError("[" ~ to!string(token.line) ~ ", " ~ to!string(token.column) ~ 
 										   "] Expected " ~ type.toString);
 			}
 		}

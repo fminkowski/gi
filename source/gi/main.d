@@ -14,6 +14,13 @@ void run(Commands cmds) {
 	auto parser = new Parser(lexer.tokens);
 	auto expr = parser.parse();
 
+	if (parser.errors !is null) {
+		foreach (e; parser.errors) {
+			writeln(e);
+		}
+		return;
+	}
+
 	IAstPrinter printer = new SExpressionPrinter();
 	auto expr_str = printer.print(expr);
 	writeln(expr_str);

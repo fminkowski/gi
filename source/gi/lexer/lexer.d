@@ -1,5 +1,7 @@
 module gi.lexer;
 
+import gi.util.error;
+
 enum TokenType {
 	Plus,
 	Minus,
@@ -97,13 +99,6 @@ class Token {
 	override string toString() {
 		return type < TokenType.IntLit ? type.toString : value;
 	}
-}
-
-class InvalidToken : Exception
-{
-    this(string msg, string file = __FILE__, size_t line = __LINE__) {
-        super(msg, file, line);
-    }
 }
 
 bool is_digit(char d) {
@@ -246,7 +241,7 @@ class Lexer {
 					_tokens ~= new Token(value, token_type, _line, _col);
 					break;
 				default:
-					throw new InvalidToken("Unrecognized token " ~ str);
+					throw new InvalidTokenError("Unrecognized token " ~ str);
 			}
 		}
 		_tokens ~= new Token("", TokenType.EndOfFile, _line, _col);
