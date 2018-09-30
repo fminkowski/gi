@@ -1,5 +1,5 @@
-module input.commands;
+module gi.input.commands;
 
 struct Commands {
-	string file_name;
+	string source;
 }
