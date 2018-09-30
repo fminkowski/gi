@@ -166,8 +166,8 @@ class Lexer : IGeneratesGiError {
 			auto ch = next();
 			auto str = to!string(ch);
 			switch (str) {
-				case " ", "\n", "\t", "\r\n":
-					if (str == "\n" || str == "\r\n") {
+				case " ", "\n", "\t", "\r\n", "\r":
+					if (str == "\n" || str == "\r\n" || str == "\r") {
 						_line++;
 						_col = 0;
 					}
@@ -320,6 +320,7 @@ class Lexer : IGeneratesGiError {
 					 add_token(new Token(value, type, _line, column));
 					 break;
 				default:
+					import std.stdio; writeln(cast(ubyte)(ch));
 					add_error(new InvalidTokenError(_line, _col, str));
 			}
 		}

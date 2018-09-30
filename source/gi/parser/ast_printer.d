@@ -1,5 +1,6 @@
 module gi.parser.ast_printer;
 
+import gi.parser.statement;
 import gi.parser.expression;
 
 interface IAstPrinter {
@@ -8,7 +9,9 @@ interface IAstPrinter {
 	string visit_unary(Unary unary);
 	string visit_binary(Binary binary);
 	string visit_assign(Assign assign);
+	string visit_simple_stmt(Stmt stmt);
 	string print(Expr expr);
+	string print(Stmt stmt);
 }
 
 class SExpressionPrinter : IAstPrinter {
@@ -36,8 +39,16 @@ class SExpressionPrinter : IAstPrinter {
 			   assign.right.accept(this);
 	}
 
+	string visit_simple_stmt(Stmt stmt) {
+		return stmt.expr.accept(this);
+	}
+
 	string print(Expr expr) {
 		return expr.accept(this);
+	}
+
+	string print(Stmt stmt) {
+		return stmt.expr.accept(this);
 	}
 }
 
@@ -62,7 +73,15 @@ class AstPrinter : IAstPrinter {
 		return assign.toString;
 	}
 
+	string visit_simple_stmt(Stmt stmt) {
+		return stmt.expr.accept(this);
+	}
+
 	string print(Expr expr) {
 		return expr.accept(this);
+	}
+
+	string print(Stmt stmt) {
+		return stmt.accept(this);
 	}
 }

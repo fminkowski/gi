@@ -2,17 +2,10 @@ module gi.parser.parser;
 
 import gi.lexer;
 import gi.parser.expression;
+import gi.parser.statement;
 import gi.util.error;
 
 import std.conv;
-
-class Stmt {
-	Expr expr;
-
-	this (Expr expr) {
-		this.expr = expr;
-	}
-}
 
 class Parser : IGeneratesGiError {
 	import std.algorithm: canFind;
@@ -35,13 +28,16 @@ class Parser : IGeneratesGiError {
 		return _errors;
 	}
 
- 	Stmt parse() {
+ 	Stmt[] parse() {
+ 		Stmt[] stmts;
 		try {
-			return statement();			
+			while (peek().type != TokenType.EndOfFile) {
+				stmts ~= statement();
+			}
 		} catch (GiError e) {
 			_errors ~= e;
 		}
-		return null;
+		return stmts;
 	}
 
 	private {
