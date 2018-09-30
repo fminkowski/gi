@@ -4,6 +4,13 @@ import gi.lexer;
 
 import std.conv;
 
+class ParsingException : Exception
+{
+    this(string msg, string file = __FILE__, size_t line = __LINE__) {
+        super(msg, file, line);
+    }
+}
+
 class Expr {
 	Token token;
 }
@@ -44,6 +51,18 @@ class Binary : Expr {
 
 	override string toString() {
 		return token.toString ~ "(" ~ left.toString ~ " " ~ right.toString ~ ")";
+	}
+}
+
+class Grouping : Expr {
+	Expr expr;
+
+	this (Expr expr) {
+		this.expr = expr;
+	}
+
+	override string toString() {
+		return expr.toString;
 	}
 }
 
@@ -151,8 +170,18 @@ class Parser {
 	}
 
 	Expr primary() {
-		auto token = next();
-		return new Primary(token);
+		if (match(TokenType.IntLit, TokenType.FloatLit)) {
+			auto token = next();
+			return new Primary(token);
+		}
+
+		if (match(TokenType.Lparen)) {
+			next();
+			Expr expr = expression();
+			consume(TokenType.Rparen);
+			return new Grouping(expr);
+		}
+		return null;
 	}
 
 	Token next() {
@@ -174,5 +203,16 @@ class Parser {
 
 	bool match(TokenType[] types...) {
 		return types.canFind(peek().type);
+	}
+
+	void expect(TokenType type) {
+		if (peek().type != type) {
+			throw new ParsingException("Expected " ~ type.toString);
+		}
+	}
+
+	void consume(TokenType type) {
+		expect(type);
+		current++;
 	}
 }

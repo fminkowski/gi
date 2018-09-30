@@ -153,6 +153,12 @@ class Lexer {
 				case "!":
 					_tokens ~= new Token(str, TokenType.Bang);
 					break;
+				case "(":
+					_tokens ~= new Token(str, TokenType.Lparen);
+					break;
+				case ")":
+					_tokens ~= new Token(str, TokenType.Rparen);
+					break;
 				case "<":
 					Token token;
 					if (peek() == '=') {
