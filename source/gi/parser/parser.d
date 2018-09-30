@@ -27,7 +27,7 @@ class Unary : Expr {
 	}
 
 	override string toString() {
-		return "(" ~ token.toString ~ right.toString() ~ ")";
+		return token.toString ~ "(" ~ right.toString() ~ ")";
 	}
 }
 
@@ -43,7 +43,7 @@ class Binary : Expr {
 	}
 
 	override string toString() {
-		return "(" ~ left.toString ~ token.toString ~ right.toString ~ ")";
+		return token.toString ~ "(" ~ left.toString ~ " " ~ right.toString ~ ")";
 	}
 }
 
@@ -64,25 +64,55 @@ class Parser {
 	}
 
 	Expr expression() {
-		return comparison();
+		return logical_or();
 	}
 
-	Expr comparison() {
-		auto expr = equality();
-		while(match(TokenType.Less,
-					TokenType.LessEqual,
-					TokenType.Greater,
-					TokenType.GreaterEqual)) {
+	Expr logical_or() {
+		auto expr = logical_and();
+		while (match(TokenType.BitXOr)) {
 			auto token = next();
-			auto right = equality();
+			auto right = logical_and();
 			expr = new Binary(expr, token, right);
 		}
 		return expr;
 	}
 
+	Expr logical_and() {
+		auto expr = bit_or();
+		return expr;
+	}
+
+	Expr bit_or() {
+		auto expr = bit_xor();
+		return expr;
+	}
+
+	Expr bit_xor() {
+		auto expr = bit_and();
+		return expr;
+	}
+
+	Expr bit_and() {
+		auto expr = equality();
+		return expr;
+	}
+
 	Expr equality() {
-		auto expr = addition();
+		auto expr = comparison();
 		while(match(TokenType.Equal)) {
+			auto token = next();
+			auto right = comparison();
+			expr = new Binary(expr, token, right);
+		}
+		return expr;
+	}
+
+	Expr comparison() {
+		auto expr = addition();
+		while(match(TokenType.Less,
+					TokenType.LessEqual,
+					TokenType.Greater,
+					TokenType.GreaterEqual)) {
 			auto token = next();
 			auto right = addition();
 			expr = new Binary(expr, token, right);
@@ -103,7 +133,7 @@ class Parser {
 	Expr multiplication() {
 		Expr expr = unary();
 
-		while (match(TokenType.Star, TokenType.Slash)) {
+		while (match(TokenType.Star, TokenType.Slash, TokenType.Mod)) {
 			auto token = next();
 			auto right = unary();
 			expr = new Binary(expr, token, right);
@@ -112,7 +142,7 @@ class Parser {
 	}
 
 	Expr unary() {		
-		if (match(TokenType.Minus, TokenType.Bang)) {
+		if (match(TokenType.Minus, TokenType.Bang, TokenType.BitNot)) {
 			auto token = next();
 			auto right = unary();
 			return new Unary(token, right);

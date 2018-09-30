@@ -4,6 +4,7 @@ enum TokenType {
 	Plus,
 	Minus,
 	Slash,
+	Mod,
 	Star,
 	Lparen,
 	Rparen,
@@ -16,7 +17,12 @@ enum TokenType {
 	LessEqual,
 	Greater,
 	GreaterEqual,
-
+	BitAnd,
+	BitOr,
+	BitNot,
+	BitXOr,
+	LogicalAnd,
+	LogicalOr,
 	//literal must be below this line
 	IntLit,
 	FloatLit,
@@ -31,6 +37,8 @@ string toString(TokenType type) {
 			return "-";
 		case TokenType.Slash:
 			return "/";
+		case TokenType.Mod:
+			return "%";
 		case TokenType.Star:
 			return "*";
 		case TokenType.Lparen:
@@ -55,6 +63,18 @@ string toString(TokenType type) {
 			return ">";
 		case TokenType.GreaterEqual:
 			return ">=";
+		case TokenType.BitAnd:
+			return "&";
+		case TokenType.BitOr:
+			return "|";
+		case TokenType.BitNot:
+			return "~";
+		case TokenType.BitXOr:
+			return "^";
+		case TokenType.LogicalAnd:
+			return "&&";
+		case TokenType.LogicalOr:
+			return "||";
 		default:
 			return "";
 	}
@@ -124,6 +144,9 @@ class Lexer {
 				case "/":
 					_tokens ~= new Token(str, TokenType.Slash);
 					break;
+				case "%":
+					_tokens ~= new Token(str, TokenType.Mod);
+					break;
 				case "*":
 					_tokens ~= new Token(str, TokenType.Star);
 					break;
@@ -160,6 +183,34 @@ class Lexer {
 						token = new Token(str, TokenType.Equal);
 					} else {
 						token = new Token(str, TokenType.Assign);
+					}
+					_tokens ~= token;
+					break;
+				case "&":
+					Token token;
+					if (peek() == '&') {
+						str = "&&";
+						next();
+						token = new Token(str, TokenType.LogicalAnd);
+					} else {
+						token = new Token(str, TokenType.BitAnd);
+					}
+					_tokens ~= token;
+					break;
+				case "~":
+					_tokens ~= new Token(str, TokenType.BitNot);
+					break;
+				case "^":
+					_tokens ~= new Token(str, TokenType.BitXOr);
+					break;
+				case "|":
+					Token token;
+					if (peek() == '|') {
+						str = "||";
+						next();
+						token = new Token(str, TokenType.LogicalOr);
+					} else {
+						token = new Token(str, TokenType.BitOr);
 					}
 					_tokens ~= token;
 					break;
