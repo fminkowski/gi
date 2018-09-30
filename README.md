@@ -1,6 +1,6 @@
-#gi programming language
+# gi programming language
 
-The gi programming language is simple language that runs on the gvm.
+The gi programming language is a simple language that runs on the gvm.
 
 gi syntax:
 ```
