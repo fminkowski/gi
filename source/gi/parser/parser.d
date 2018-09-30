@@ -6,7 +6,7 @@ import gi.util.error;
 
 import std.conv;
 
-class Parser {
+class Parser : IGeneratesGiError {
 	import std.algorithm: canFind;
 
 	private {
@@ -17,6 +17,10 @@ class Parser {
 
 	this(Token[] tokens) {
 		this._tokens = tokens;
+	}
+
+	@property bool has_errors() {
+		return this._errors !is null;
 	}
 
 	@property GiError[] errors() {
@@ -152,7 +156,8 @@ class Parser {
 				consume(TokenType.Rparen);
 				return new Grouping(expr);
 			}
-			throw new ParsingError("Unrecognized token");
+			auto token = peek();
+			throw new ParsingError(token.line, token.column, "Unrecognized token");
 		}
 
 		Token next() {
@@ -179,8 +184,8 @@ class Parser {
 		void expect(TokenType type) {
 			auto token = peek();
 			if (token.type != type) {
-				throw new ParsingError("[" ~ to!string(token.line) ~ ", " ~ to!string(token.column) ~ 
-										   "] Expected " ~ type.toString);
+				auto msg = "Expected " ~ type.toString;
+				throw new ParsingError(token.line, token.column, msg);
 			}
 		}
 

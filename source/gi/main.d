@@ -4,20 +4,22 @@ import gi.input.commands;
 import gi.lexer;
 import gi.parser.parser;
 import gi.parser.ast_printer;
+import gi.util.logger;
 
 import std.stdio;
 
 void run(Commands cmds) {
 	auto lexer = new Lexer(cmds.source);
 	lexer.lex();
+	Logger.log(lexer);
+	if (lexer.has_errors) {
+		return;
+	}
 
 	auto parser = new Parser(lexer.tokens);
 	auto expr = parser.parse();
-
-	if (parser.errors !is null) {
-		foreach (e; parser.errors) {
-			writeln(e);
-		}
+	Logger.log(parser);
+	if (parser.has_errors) {
 		return;
 	}
 

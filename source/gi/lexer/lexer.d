@@ -112,7 +112,7 @@ bool is_char(char c) {
 		   c == '_';
 }
 
-class Lexer {
+class Lexer : IGeneratesGiError {
 	import std.conv;
 	import std.string;
 
@@ -122,12 +122,21 @@ class Lexer {
 		Token[] _tokens;
 		int _line;
 		int _col;
+		GiError[] _errors;
 	}
 
 	this(string src) {
 		this._src = src;
 		this._line = 1;
 		this._col = 1;
+	}
+
+	@property bool has_errors() {
+		return this._errors !is null;
+	}
+
+	@property GiError[] errors() {
+		return this._errors;
 	}
 
 	public void lex() {
@@ -241,7 +250,7 @@ class Lexer {
 					_tokens ~= new Token(value, token_type, _line, _col);
 					break;
 				default:
-					throw new InvalidTokenError("Unrecognized token " ~ str);
+					_errors ~= new InvalidTokenError(_line, _col, str);
 			}
 		}
 		_tokens ~= new Token("", TokenType.EndOfFile, _line, _col);
