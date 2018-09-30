@@ -132,7 +132,7 @@ class Lexer : IGeneratesGiError {
 	this(string src) {
 		this._src = src;
 		this._line = 1;
-		this._col = 1;
+		this._col = 0;
 	}
 
 	@property bool has_errors() {
@@ -151,6 +151,7 @@ class Lexer : IGeneratesGiError {
 				case " ", "\n", "\t", "\r\n":
 					if (str == "\n" || str == "\r\n") {
 						_line++;
+						_col = 0;
 					}
 					continue;
 				case "+": 
