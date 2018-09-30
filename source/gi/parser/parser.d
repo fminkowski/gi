@@ -6,6 +6,14 @@ import gi.util.error;
 
 import std.conv;
 
+class Stmt {
+	Expr expr;
+
+	this (Expr expr) {
+		this.expr = expr;
+	}
+}
+
 class Parser : IGeneratesGiError {
 	import std.algorithm: canFind;
 
@@ -27,9 +35,9 @@ class Parser : IGeneratesGiError {
 		return _errors;
 	}
 
- 	Expr parse() {
+ 	Stmt parse() {
 		try {
-			return expression();			
+			return statement();			
 		} catch (GiError e) {
 			_errors ~= e;
 		}
@@ -37,9 +45,16 @@ class Parser : IGeneratesGiError {
 	}
 
 	private {
+		Stmt statement() {
+			Expr expr = expression();
+			consume(TokenType.SemiColon);
+			return new Stmt(expr);
+		}
+
 		Expr expression() {
 			return assign();
 		}
+
 
 		Expr assign() {
 			if(match(TokenType.Var, TokenType.Identifier)) {

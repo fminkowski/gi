@@ -16,6 +16,7 @@ enum TokenType {
 	Assign,
 	DoubleColon,
 	Colon,
+	SemiColon,
 	Equal,
 	Less,
 	LessEqual,
@@ -63,6 +64,8 @@ string toString(TokenType type) {
 			return ":";
 		case TokenType.DoubleColon:
 			return "::";
+		case TokenType.SemiColon:
+			return ";";
 		case TokenType.Equal:
 			return "==";
 		case TokenType.Less:
@@ -193,6 +196,9 @@ class Lexer : IGeneratesGiError {
 				case ")":
 					add_token(new Token(str, TokenType.Rparen, _line, _col));
 					break;
+				case ";":
+					add_token(new Token(str, TokenType.SemiColon, _line, _col));
+					break;
 				case "<":
 					Token token;
 					TokenType type;
@@ -273,17 +279,17 @@ class Lexer : IGeneratesGiError {
 					break;
 				case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
 					string value;
-					value ~= ch;
 					auto column = _col;
 					TokenType token_type = TokenType.IntLit;
-					while (is_digit(peek()) || peek() == '.') {
-						ch = next();
+					while (is_digit(ch) || ch == '.') {
 						if (ch == '.') {
 							token_type = TokenType.FloatLit;
-							value ~= ch;
-							ch = next();
 						}
 						value ~= ch;
+						if (!is_digit(peek()) && peek() != '.') {
+							break;
+						}
+						ch = next();
 					}
 
 					if (is_char(peek())) {
@@ -302,6 +308,9 @@ class Lexer : IGeneratesGiError {
 					 TokenType type = TokenType.Identifier;
 					 while (is_identifier_char(ch)) {
 					 	value ~= ch;
+					 	if (!is_identifier_char(peek())) {
+					 		break;
+					 	}
 					 	ch = next();
 					 }
 

@@ -15,17 +15,17 @@ void run(Commands cmds) {
 	}
 
 	auto parser = new Parser(lexer.tokens);
-	auto expr = parser.parse();
+	auto stmt = parser.parse();
 	Logger.log(parser);
 	if (parser.has_errors) {
 		return;
 	}
 
 	IAstPrinter printer = new SExpressionPrinter();
-	auto expr_str = printer.print(expr);
+	auto expr_str = printer.print(stmt.expr);
 	Logger.log(expr_str);
 
 	printer = new AstPrinter();
-	expr_str = printer.print(expr);
+	expr_str = printer.print(stmt.expr);
 	Logger.log(expr_str);
 }
