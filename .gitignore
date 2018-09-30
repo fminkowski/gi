@@ -13,3 +13,4 @@ gi-test-*
 *.obj
 *.lst
 *.sublime-workspace
+test.gi
