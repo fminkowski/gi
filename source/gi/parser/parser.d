@@ -38,6 +38,22 @@ class Parser : IGeneratesGiError {
 
 	private {
 		Expr expression() {
+			return assign();
+		}
+
+		Expr assign() {
+			if(match(TokenType.Var, TokenType.Identifier)) {
+				if (match(TokenType.Var)) {
+					consume(TokenType.Var);
+					expect(TokenType.Identifier);
+				}
+				Expr expr = logical_or();
+				while (match(TokenType.Assign)) {
+					auto token = next();
+					auto right = logical_or();
+					return new Assign(expr, token, right);
+				}
+			}
 			return logical_or();
 		}
 
@@ -145,7 +161,7 @@ class Parser : IGeneratesGiError {
 		}
 
 		Expr primary() {
-			if (match(TokenType.IntLit, TokenType.FloatLit, TokenType.Identifier)) {
+			if (match(TokenType.IntLit, TokenType.FloatLit, TokenType.Identifier, TokenType.Var)) {
 				auto token = next();
 				return new Primary(token);
 			}

@@ -7,6 +7,7 @@ interface IAstPrinter {
 	string visit_primary(Primary primary);
 	string visit_unary(Unary unary);
 	string visit_binary(Binary binary);
+	string visit_assign(Assign assign);
 	string print(Expr expr);
 }
 
@@ -29,6 +30,12 @@ class SExpressionPrinter : IAstPrinter {
 			   binary.right.accept(this) ~ ")";
 	}
 
+	string visit_assign(Assign assign) {
+		return assign.left.accept(this) ~ " " ~
+			   assign.token.toString ~ " " ~
+			   assign.right.accept(this);
+	}
+
 	string print(Expr expr) {
 		return expr.accept(this);
 	}
@@ -49,6 +56,10 @@ class AstPrinter : IAstPrinter {
 
 	string visit_binary(Binary binary) {
 		return binary.toString;
+	}
+
+	string visit_assign(Assign assign) {
+		return assign.toString;
 	}
 
 	string print(Expr expr) {

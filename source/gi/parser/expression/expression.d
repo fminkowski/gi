@@ -74,3 +74,23 @@ class Grouping : Expr {
 		return printer.visit_grouping(this);
 	}
 }
+
+class Assign : Expr {
+	Expr left;
+	Expr right;
+	Token token;
+
+	this (Expr left, Token token, Expr right) {
+		this.left = left;
+		this.token = token;
+		this.right = right;
+	}
+
+	override string toString() {
+		return "Assign(" ~ left.toString ~ ", " ~ token.toString ~ ", " ~ right.toString ~ ")";
+	}
+
+	override string accept(IAstPrinter printer) {
+		return printer.visit_assign(this);
+	}
+}

@@ -14,6 +14,8 @@ enum TokenType {
 	Rbracket,
 	Bang,
 	Assign,
+	DoubleColon,
+	Colon,
 	Equal,
 	Less,
 	LessEqual,
@@ -29,6 +31,7 @@ enum TokenType {
 	IntLit,
 	FloatLit,
 	Identifier,
+	Var,
 	EndOfFile
 }
 
@@ -56,6 +59,10 @@ string toString(TokenType type) {
 			return "!";
 		case TokenType.Assign:
 			return "=";
+		case TokenType.Colon:
+			return ":";
+		case TokenType.DoubleColon:
+			return "::";
 		case TokenType.Equal:
 			return "==";
 		case TokenType.Less:
@@ -78,6 +85,14 @@ string toString(TokenType type) {
 			return "&&";
 		case TokenType.LogicalOr:
 			return "||";
+		case TokenType.IntLit:
+			return "int";
+		case TokenType.FloatLit:
+			return "float";
+		case TokenType.Identifier:
+			return "identifier";
+		case TokenType.Var:
+			return "var";
 		default:
 			return "";
 	}
@@ -214,6 +229,18 @@ class Lexer : IGeneratesGiError {
 					}
 					add_token(new Token(str, type, _line, _col));
 					break;
+				case ":":
+					Token token;
+					TokenType type;
+					if (peek() == ':') {
+						next();
+						str = "::";
+						type = TokenType.DoubleColon;
+					} else {
+						type = TokenType.Colon;
+					}
+					add_token(new Token(str, type, _line, _col));
+					break;
 				case "&":
 					Token token;
 					TokenType type;
@@ -272,11 +299,16 @@ class Lexer : IGeneratesGiError {
 					 "_":
 					 string value;
 					 auto column = _col;
+					 TokenType type = TokenType.Identifier;
 					 while (is_identifier_char(ch)) {
 					 	value ~= ch;
 					 	ch = next();
 					 }
-					 add_token(new Token(value, TokenType.Identifier, _line, column));
+
+					 if (value == "var") {
+					 	type = TokenType.Var;
+					 }
+					 add_token(new Token(value, type, _line, column));
 					 break;
 				default:
 					add_error(new InvalidTokenError(_line, _col, str));
