@@ -10,8 +10,6 @@ interface IAstPrinter {
 	string visit_binary(Binary binary);
 	string visit_assign(Assign assign);
 	string visit_simple_stmt(Stmt stmt);
-	string print(Expr expr);
-	string print(Stmt stmt);
 }
 
 class SExpressionPrinter : IAstPrinter {
@@ -42,14 +40,6 @@ class SExpressionPrinter : IAstPrinter {
 	string visit_simple_stmt(Stmt stmt) {
 		return stmt.expr.accept(this);
 	}
-
-	string print(Expr expr) {
-		return expr.accept(this);
-	}
-
-	string print(Stmt stmt) {
-		return stmt.expr.accept(this);
-	}
 }
 
 class AstPrinter : IAstPrinter {
@@ -75,13 +65,5 @@ class AstPrinter : IAstPrinter {
 
 	string visit_simple_stmt(Stmt stmt) {
 		return stmt.expr.accept(this);
-	}
-
-	string print(Expr expr) {
-		return expr.accept(this);
-	}
-
-	string print(Stmt stmt) {
-		return stmt.accept(this);
 	}
 }

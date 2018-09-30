@@ -21,10 +21,5 @@ void run(Commands cmds) {
 		return;
 	}
 
-	IAstPrinter printer = new SExpressionPrinter();
-
-	foreach (stmt; stmts) {
-		auto stmt_str = printer.print(stmt);
-		Logger.log(stmt_str);
-	}
+	Logger.log(stmts);
 }
