@@ -88,7 +88,7 @@ class Parser {
 
 	Expr logical_or() {
 		auto expr = logical_and();
-		while (match(TokenType.BitXOr)) {
+		while (match(TokenType.LogicalOr)) {
 			auto token = next();
 			auto right = logical_and();
 			expr = new Binary(expr, token, right);
@@ -98,21 +98,41 @@ class Parser {
 
 	Expr logical_and() {
 		auto expr = bit_or();
+		while (match(TokenType.LogicalAnd)) {
+			auto token = next();
+			auto right = bit_or();
+			expr = new Binary(expr, token, right);
+		}
 		return expr;
 	}
 
 	Expr bit_or() {
 		auto expr = bit_xor();
+		while (match(TokenType.BitOr)) {
+			auto token = next();
+			auto right = bit_xor();
+			expr = new Binary(expr, token, right);
+		}
 		return expr;
 	}
 
 	Expr bit_xor() {
 		auto expr = bit_and();
+		while (match(TokenType.BitXOr)) {
+			auto token = next();
+			auto right = bit_and();
+			expr = new Binary(expr, token, right);
+		}
 		return expr;
 	}
 
 	Expr bit_and() {
 		auto expr = equality();
+		while (match(TokenType.BitAnd)) {
+			auto token = next();
+			auto right = equality();
+			expr = new Binary(expr, token, right);
+		}
 		return expr;
 	}
 
