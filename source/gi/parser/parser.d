@@ -145,7 +145,7 @@ class Parser : IGeneratesGiError {
 		}
 
 		Expr primary() {
-			if (match(TokenType.IntLit, TokenType.FloatLit)) {
+			if (match(TokenType.IntLit, TokenType.FloatLit, TokenType.Identifier)) {
 				auto token = next();
 				return new Primary(token);
 			}

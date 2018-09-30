@@ -33,6 +33,21 @@ class InvalidTokenError : GiError
     }
 }
 
+class InvalidIdentifierError : GiError
+{
+	private {
+		static const int _code = 3;
+	}
+
+    this(int line, int column, string msg = "") {
+        super(code, line, column, msg);
+    }
+
+    override string toString() {
+    	return super.toString ~ "Invalid Identifier -> " ~ msg;
+    }
+}
+
 class ParsingError : GiError
 {
 	private {

@@ -25,9 +25,10 @@ enum TokenType {
 	BitXOr,
 	LogicalAnd,
 	LogicalOr,
-	//literal must be below this line
+	NonOps, //Non-op symbols must be below this line
 	IntLit,
 	FloatLit,
+	Identifier,
 	EndOfFile
 }
 
@@ -97,7 +98,7 @@ class Token {
 	}
 
 	override string toString() {
-		return type < TokenType.IntLit ? type.toString : value;
+		return type < TokenType.NonOps ? type.toString : value;
 	}
 }
 
@@ -108,8 +109,11 @@ bool is_digit(char d) {
 bool is_char(char c) {
 	return c >= 'A' && c <= 'Z' ||
 		   c >= 'a' && c <= 'z' ||
-		   c >= '0' && c <= '9' ||
 		   c == '_';
+}
+
+bool is_identifier_char(char c) {
+	return is_char(c) || c >= '0' && c <= '9';
 }
 
 class Lexer : IGeneratesGiError {
@@ -150,28 +154,28 @@ class Lexer : IGeneratesGiError {
 					}
 					continue;
 				case "+": 
-					_tokens ~= new Token(str, TokenType.Plus, _line, _col);
+					add_token(new Token(str, TokenType.Plus, _line, _col));
 					break;
 				case "-": 
-					_tokens ~= new Token(str, TokenType.Minus, _line, _col);
+					add_token(new Token(str, TokenType.Minus, _line, _col));
 					break;
 				case "/":
-					_tokens ~= new Token(str, TokenType.Slash, _line, _col);
+					add_token(new Token(str, TokenType.Slash, _line, _col));
 					break;
 				case "%":
-					_tokens ~= new Token(str, TokenType.Mod, _line, _col);
+					add_token(new Token(str, TokenType.Mod, _line, _col));
 					break;
 				case "*":
-					_tokens ~= new Token(str, TokenType.Star, _line, _col);
+					add_token(new Token(str, TokenType.Star, _line, _col));
 					break;
 				case "!":
-					_tokens ~= new Token(str, TokenType.Bang, _line, _col);
+					add_token(new Token(str, TokenType.Bang, _line, _col));
 					break;
 				case "(":
-					_tokens ~= new Token(str, TokenType.Lparen, _line, _col);
+					add_token(new Token(str, TokenType.Lparen, _line, _col));
 					break;
 				case ")":
-					_tokens ~= new Token(str, TokenType.Rparen, _line, _col);
+					add_token(new Token(str, TokenType.Rparen, _line, _col));
 					break;
 				case "<":
 					Token token;
@@ -182,7 +186,7 @@ class Lexer : IGeneratesGiError {
 					} else {
 						token = new Token(str, TokenType.Less, _line, _col);
 					}
-					_tokens ~= token;
+					add_token(token);
 					break;
 				case ">":
 					Token token;
@@ -193,7 +197,7 @@ class Lexer : IGeneratesGiError {
 					} else {
 						token = new Token(str, TokenType.Greater, _line, _col);
 					}
-					_tokens ~= token;
+					add_token(token);
 					break;
 				case "=":
 					Token token;
@@ -204,7 +208,7 @@ class Lexer : IGeneratesGiError {
 					} else {
 						token = new Token(str, TokenType.Assign, _line, _col);
 					}
-					_tokens ~= token;
+					add_token(token);
 					break;
 				case "&":
 					Token token;
@@ -215,13 +219,13 @@ class Lexer : IGeneratesGiError {
 					} else {
 						token = new Token(str, TokenType.BitAnd, _line, _col);
 					}
-					_tokens ~= token;
+					add_token(token);
 					break;
 				case "~":
-					_tokens ~= new Token(str, TokenType.BitNot, _line, _col);
+					add_token(new Token(str, TokenType.BitNot, _line, _col));
 					break;
 				case "^":
-					_tokens ~= new Token(str, TokenType.BitXOr, _line, _col);
+					add_token(new Token(str, TokenType.BitXOr, _line, _col));
 					break;
 				case "|":
 					Token token;
@@ -232,11 +236,12 @@ class Lexer : IGeneratesGiError {
 					} else {
 						token = new Token(str, TokenType.BitOr, _line, _col);
 					}
-					_tokens ~= token;
+					add_token(token);
 					break;
 				case "0", "1", "2", "3", "4", "5", "6", "7", "8", "9":
 					string value;
 					value ~= ch;
+					auto column = _col;
 					TokenType token_type = TokenType.IntLit;
 					while (is_digit(peek()) || peek() == '.') {
 						ch = next();
@@ -247,13 +252,31 @@ class Lexer : IGeneratesGiError {
 						}
 						value ~= ch;
 					}
-					_tokens ~= new Token(value, token_type, _line, _col);
+
+					if (is_char(peek())) {
+						add_error(new InvalidIdentifierError(_line, column, "Identifier cannot start with a digit"));
+					}
+
+					add_token(new Token(value, token_type, _line, _col));
 					break;
+				case "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+					 "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+					 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+					 "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+					 "_":
+					 string value;
+					 auto column = _col;
+					 while (is_identifier_char(ch)) {
+					 	value ~= ch;
+					 	ch = next();
+					 }
+					 add_token(new Token(value, TokenType.Identifier, _line, column));
+					 break;
 				default:
-					_errors ~= new InvalidTokenError(_line, _col, str);
+					add_error(new InvalidTokenError(_line, _col, str));
 			}
 		}
-		_tokens ~= new Token("", TokenType.EndOfFile, _line, _col);
+		add_token(new Token("", TokenType.EndOfFile, _line, _col));
 	}
 
 	@property Token[] tokens() {
@@ -276,5 +299,13 @@ class Lexer : IGeneratesGiError {
 			return str;
 		}
 		return '\0';
+	}
+
+	private void add_token(Token token) {
+		_tokens ~= token;
+	}
+
+	private void add_error(GiError error) {
+		this._errors ~= error;
 	}
 }
