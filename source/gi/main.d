@@ -6,8 +6,6 @@ import gi.parser.parser;
 import gi.parser.ast_printer;
 import gi.util.logger;
 
-import std.stdio;
-
 void run(Commands cmds) {
 	auto lexer = new Lexer(cmds.source);
 	lexer.lex();
@@ -25,9 +23,9 @@ void run(Commands cmds) {
 
 	IAstPrinter printer = new SExpressionPrinter();
 	auto expr_str = printer.print(expr);
-	writeln(expr_str);
+	Logger.log(expr_str);
 
 	printer = new AstPrinter();
 	expr_str = printer.print(expr);
-	writeln(expr_str);
+	Logger.log(expr_str);
 }

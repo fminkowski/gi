@@ -11,4 +11,8 @@ static class Logger {
 			}
 		}
 	}
+
+	static void log(string msg) {
+		writeln(msg);
+	}
 }
