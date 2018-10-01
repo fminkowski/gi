@@ -1,6 +1,6 @@
 # gi programming language
 
-The gi programming language is a simple language that runs on the gvm.
+The gi programming language is a simple language that will compile to LLVM (work in progress). And will eventually compile to the sister project gvm.
 
 gi syntax:
 ```
