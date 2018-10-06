@@ -3,8 +3,14 @@ module gi.parser.statement;
 import gi.parser.expression;
 import gi.parser.ast_printer;
 import gi.lexer;
+import gi.code_gen.code_gen;
 
-class Stmt {
+interface IStmt {
+	string accept(IAstPrinter printer);
+	string accept(ICodeGen code_gen);
+}
+
+class Stmt : IStmt {
 	Expr r_expr;
 
 	this (Expr r_expr) {
@@ -17,6 +23,10 @@ class Stmt {
 
 	string accept(IAstPrinter printer) {
 		return printer.visit_simple_stmt(this);
+	}
+
+	string accept(ICodeGen code_gen) {
+		return code_gen.visit_simple_stmt(this);
 	}
 }
 
@@ -38,6 +48,10 @@ class AssignStmt : Stmt {
 
 	override string accept(IAstPrinter printer) {
 		return printer.visit_assignment_stmt(this);
+	}
+
+	override string accept(ICodeGen code_gen) {
+		return code_gen.visit_assignment_stmt(this);
 	}
 }
 
