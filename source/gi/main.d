@@ -23,15 +23,17 @@ void run(Commands cmds) {
 		return;
 	}
 
-	Logger.log(stmts);
-
 	import gi.code_gen.llvm;
 	auto llvm = new LLVMCodeGen();
 
-	stmts[0].accept(llvm);
+	foreach (stmt; stmts) {
+		stmt.accept(llvm);
+	}
 
 	string lines;
-	foreach (line; llvm.line) {
+	foreach (line; llvm.code_lines) {
 		lines ~= line;
 	}
+
+	Logger.log(lines);
 }

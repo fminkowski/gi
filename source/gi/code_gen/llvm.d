@@ -11,6 +11,16 @@ string parseOpType(TokenType type) {
 			return "add";
 		case TokenType.Minus:
 			return "sub";
+		case TokenType.Star:
+			return "mul";
+		case TokenType.Slash:
+			return "div";
+		case TokenType.Bang:
+			return "not";
+		case TokenType.LogicalAnd:
+			return "and";
+		case TokenType.LogicalOr:
+			return "or";
 		default:
 			return "";
 	}
@@ -18,42 +28,55 @@ string parseOpType(TokenType type) {
 
 class LLVMCodeGen : ICodeGen {
 	import std.conv;
-	string[] line;
+	import gi.util.algorithm;
 
-	int tmp = 0;
+	string[] code_lines;
+
+	int current_op = 0;
 
 	string visit_primary(Primary expr) {
 		return expr.token.toString;
 	}
 
-	string visit_unary(Unary expr) {
-		return expr.token.toString() ~ expr.right.accept(this);
+	void visit_unary(Unary expr) {
+		evaluate(expr.right);
+		auto right_operand = expr.right.local_value.null_or_empty ? expr.right.token.toString : expr.right.local_value;
+		auto line = "\n%" ~ to!string(current_op) ~ "=" ~ 
+					parseOpType(expr.token.type) ~ " " ~
+					right_operand;
+		expr.local_value = "%" ~ to!string(current_op++);
+		code_lines ~= line;
 	}
 
-	string visit_binary(Binary expr) {
-		auto val = "\n%" ~ to!string(tmp++) ~ "=" ~ 
+	void visit_binary(Binary expr) {
+		evaluate(expr.left);
+		evaluate(expr.right);
+
+		auto left_operand = expr.left.local_value.null_or_empty ? expr.left.token.toString : expr.left.local_value;
+		auto right_operand = expr.right.local_value.null_or_empty ? expr.right.token.toString : expr.right.local_value;
+
+		auto line = "\n%" ~ to!string(current_op) ~ "=" ~ 
 				parseOpType(expr.token.type) ~ " " ~ 
-				expr.left.token.toString ~ ",  " ~ expr.right.token.toString;
-		line ~= val;
-		expr.left.accept(this);
-		expr.right.accept(this);
-		return "";
+				left_operand ~ ",  " ~ right_operand;
+
+		expr.local_value = "%" ~ to!string(current_op++);
+		code_lines ~= line;
 	}
 	
-	string visit_grouping(Grouping expr) {
+	void visit_simple_stmt(Stmt stmt) {
+		evaluate(stmt.r_expr);
+	}
+
+	void visit_assignment_stmt(AssignStmt stmt) {
+		current_op = 0;
+		auto result_l = evaluate(stmt.l_expr);
+		auto result_r = evaluate(stmt.r_expr);
+		auto index = current_op < 0 ? 0 : current_op - 1;
+		auto line = "\n%" ~ result_l ~ "=" ~ (current_op > 0 ? "%" ~ index.to!string : result_r);
+		code_lines ~= line;
+	}
+
+	private string evaluate(Expr expr) {
 		return expr.accept(this);
-	}
-
-	string visit_simple_stmt(Stmt stmt) {
-		return stmt.r_expr.accept(this);
-	}
-
-	string visit_assignment_stmt(AssignStmt stmt) {
-		tmp = 0;
-		auto result_l = stmt.l_expr.accept(this);
-		auto result_r = stmt.r_expr.accept(this);
-		auto val = "\n%" ~ result_l ~ "=" ~ "%0";
-		line ~= val;
-		return val;
 	}
 }

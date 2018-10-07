@@ -6,6 +6,7 @@ import gi.code_gen.code_gen;
 
 abstract class Expr {
 	Token token;
+	string local_value;
 	string accept(IAstPrinter printer);
 	string accept(ICodeGen code_gen);
 }
@@ -45,7 +46,8 @@ class Unary : Expr {
 	}
 
 	override string accept(ICodeGen code_gen) {
-		return code_gen.visit_unary(this);
+		code_gen.visit_unary(this);
+		return "";
 	}
 }
 
@@ -68,26 +70,7 @@ class Binary : Expr {
 	}
 
 	override string accept(ICodeGen code_gen) {
-		return code_gen.visit_binary(this);
-	}
-}
-
-class Grouping : Expr {
-	Expr expr;
-
-	this (Expr expr) {
-		this.expr = expr;
-	}
-
-	override string toString() {
-		return "(" ~ expr.toString ~ ")";
-	}
-
-	override string accept(IAstPrinter printer) {
-		return printer.visit_grouping(this);
-	}
-
-	override string accept(ICodeGen code_gen) {
-		return code_gen.visit_grouping(this);
+		code_gen.visit_binary(this);
+		return "";
 	}
 }

@@ -181,7 +181,7 @@ class Parser : IGeneratesGiError {
 				next();
 				Expr expr = expression();
 				consume(TokenType.Rparen);
-				return new Grouping(expr);
+				return expr;
 			}
 			auto token = peek();
 			throw new ParsingError(token.line, token.column, "Unrecognized token " ~ token.value );

@@ -4,7 +4,6 @@ import gi.parser.statement;
 import gi.parser.expression;
 
 interface IAstPrinter {
-	string visit_grouping(Grouping primary);
 	string visit_primary(Primary primary);
 	string visit_unary(Unary unary);
 	string visit_binary(Binary binary);
@@ -13,10 +12,6 @@ interface IAstPrinter {
 }
 
 class SExpressionPrinter : IAstPrinter {
-	string visit_grouping(Grouping grouping) {
-		return "(" ~ grouping.expr.accept(this) ~ ")";
-	}
-
 	string visit_primary(Primary primary) {
 		return primary.token.toString;
 	}
@@ -41,10 +36,6 @@ class SExpressionPrinter : IAstPrinter {
 }
 
 class AstPrinter : IAstPrinter {
-	string visit_grouping(Grouping grouping) {
-		return grouping.toString;
-	}
-
 	string visit_primary(Primary primary) {
 		return primary.toString;
 	}

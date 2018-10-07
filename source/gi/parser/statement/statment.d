@@ -7,7 +7,7 @@ import gi.code_gen.code_gen;
 
 interface IStmt {
 	string accept(IAstPrinter printer);
-	string accept(ICodeGen code_gen);
+	void accept(ICodeGen code_gen);
 }
 
 class Stmt : IStmt {
@@ -25,8 +25,8 @@ class Stmt : IStmt {
 		return printer.visit_simple_stmt(this);
 	}
 
-	string accept(ICodeGen code_gen) {
-		return code_gen.visit_simple_stmt(this);
+	void accept(ICodeGen code_gen) {
+		code_gen.visit_simple_stmt(this);
 	}
 }
 
@@ -50,8 +50,8 @@ class AssignStmt : Stmt {
 		return printer.visit_assignment_stmt(this);
 	}
 
-	override string accept(ICodeGen code_gen) {
-		return code_gen.visit_assignment_stmt(this);
+	override void accept(ICodeGen code_gen) {
+		code_gen.visit_assignment_stmt(this);
 	}
 }
 
