@@ -42,14 +42,18 @@ class Parser : IGeneratesGiError {
 
 	private {
 		Stmt statement() {
-			auto stmt = assignment();
-			return stmt;
+			if (match(TokenType.Func)) {
+				next();
+				return func();
+			} else {
+				return assignment();
+			}
 		}
 
-		Expr expression() {
-			return logical_or();
+		Stmt func() {
+			auto name = next();
+			return new FuncStmt(name, TokenType.Int32);
 		}
-
 
 		Stmt assignment() {
 			if(match(TokenType.Var, 
@@ -66,6 +70,10 @@ class Parser : IGeneratesGiError {
 				}
 			}
 			return new Stmt(logical_or());
+		}
+
+		Expr expression() {
+			return logical_or();
 		}
 
 		Expr logical_or() {

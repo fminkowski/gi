@@ -55,3 +55,21 @@ class AssignStmt : Stmt {
 	}
 }
 
+class FuncStmt : Stmt {
+	Token name;
+	TokenType return_type;
+
+	this (Token name, TokenType return_type) {
+		this.name = name;
+		this.return_type = return_type;
+		super(null);
+	}
+
+	override string accept(IAstPrinter printer) {
+		return printer.visit_func(this);
+	}
+
+	override string toString() {
+		return "Func(" ~ return_type.toString ~ ")";
+	}
+}

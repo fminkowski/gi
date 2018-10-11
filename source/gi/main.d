@@ -26,14 +26,5 @@ void run(Commands cmds) {
 	import gi.code_gen.llvm;
 	auto llvm = new LLVMCodeGen();
 
-	foreach (stmt; stmts) {
-		stmt.accept(llvm);
-	}
-
-	string lines;
-	foreach (line; llvm.code_lines) {
-		lines ~= line;
-	}
-
-	Logger.log(lines);
+	Logger.log(stmts);
 }

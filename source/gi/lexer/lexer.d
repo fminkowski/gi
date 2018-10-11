@@ -33,6 +33,7 @@ enum TokenType {
 	IntLit,
 	FloatLit,
 	Identifier,
+	Func,
 	Var,
 	Int32,
 	Float32,
@@ -97,6 +98,8 @@ string toString(TokenType type) {
 			return "f32";
 		case TokenType.Identifier:
 			return "identifier";
+		case TokenType.Func:
+			return "func";
 		case TokenType.Var:
 			return "var";
 		default:
@@ -143,6 +146,8 @@ TokenType base_type(string value) {
 			return TokenType.Int32;
 		case "f32":
 			return TokenType.Float32;
+		case "func":
+			return TokenType.Func;
 		default:
 			return TokenType.None;
 	}

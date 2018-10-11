@@ -9,6 +9,7 @@ interface IAstPrinter {
 	string visit_binary(Binary binary);
 	string visit_simple_stmt(Stmt stmt);
 	string visit_assignment_stmt(AssignStmt stmt);
+	string visit_func(FuncStmt func);
 }
 
 class SExpressionPrinter : IAstPrinter {
@@ -33,6 +34,10 @@ class SExpressionPrinter : IAstPrinter {
 	string visit_assignment_stmt(AssignStmt stmt) {
 		return stmt.type.toString() ~ " " ~ stmt.l_expr.accept(this) ~ " " ~ stmt.op.toString ~ " " ~ stmt.r_expr.accept(this);
 	}
+
+	string visit_func(FuncStmt func) {
+		return func.name.toString();
+	}
 }
 
 class AstPrinter : IAstPrinter {
@@ -54,5 +59,9 @@ class AstPrinter : IAstPrinter {
 
 	string visit_assignment_stmt(AssignStmt stmt) {
 		return stmt.toString;
+	}
+
+	string visit_func(FuncStmt func) {
+		return func.toString();
 	}
 }
